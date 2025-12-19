@@ -5,7 +5,7 @@ import (
 	"testing"
 	"time"
 
-	Frequency "github.com/razorpay/go-financial/enums/frequency"
+	Frequency "github.com/vlaship/go-financial/enums/frequency"
 )
 
 type dateGroup struct {

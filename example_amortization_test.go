@@ -5,10 +5,10 @@ import (
 
 	"github.com/shopspring/decimal"
 
-	gofinancial "github.com/razorpay/go-financial"
-	"github.com/razorpay/go-financial/enums/frequency"
-	"github.com/razorpay/go-financial/enums/interesttype"
-	"github.com/razorpay/go-financial/enums/paymentperiod"
+	gofinancial "github.com/vlaship/go-financial"
+	"github.com/vlaship/go-financial/enums/frequency"
+	"github.com/vlaship/go-financial/enums/interesttype"
+	"github.com/vlaship/go-financial/enums/paymentperiod"
 )
 
 // This example generates amortization table for a loan of 20 lakhs over 15years at 12% per annum.

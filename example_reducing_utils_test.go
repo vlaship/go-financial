@@ -3,9 +3,9 @@ package gofinancial_test
 import (
 	"fmt"
 
-	gofinancial "github.com/razorpay/go-financial"
-	"github.com/razorpay/go-financial/enums/paymentperiod"
 	"github.com/shopspring/decimal"
+	gofinancial "github.com/vlaship/go-financial"
+	"github.com/vlaship/go-financial/enums/paymentperiod"
 )
 
 // If you have a loan of 1,00,000 to be paid after 2 years, with 18% p.a. compounded annually, how much total payment will you have to do each month?

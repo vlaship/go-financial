@@ -12,8 +12,10 @@
 *.out
 
 # Dependency directories
- vendor/
+vendor/
 
  # goland configs
- .idea
+.idea/
+.vscode/
+.kiro/
 loan-schedule.html

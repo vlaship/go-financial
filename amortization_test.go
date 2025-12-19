@@ -14,11 +14,11 @@ import (
 
 	"github.com/go-echarts/go-echarts/v2/charts"
 
-	"github.com/razorpay/go-financial/enums/interesttype"
-	"github.com/razorpay/go-financial/enums/paymentperiod"
 	"github.com/smarty/assertions"
+	"github.com/vlaship/go-financial/enums/interesttype"
+	"github.com/vlaship/go-financial/enums/paymentperiod"
 
-	"github.com/razorpay/go-financial/enums/frequency"
+	"github.com/vlaship/go-financial/enums/frequency"
 )
 
 const (
