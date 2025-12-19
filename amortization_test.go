@@ -401,3 +401,203 @@ func getExpectedHtmlString() string {
 </html>
 `
 }
+
+// Test for sanityCheckUpdate function error cases
+func TestSanityCheckUpdate(t *testing.T) {
+	tests := []struct {
+		name      string
+		row       Row
+		tolerance decimal.Decimal
+		wantErr   bool
+		errType   error
+	}{
+		{
+			name: "payment equals principal plus interest",
+			row: Row{
+				Payment:   decimal.NewFromFloat(1000),
+				Principal: decimal.NewFromFloat(800),
+				Interest:  decimal.NewFromFloat(200),
+			},
+			tolerance: decimal.NewFromFloat(0.01),
+			wantErr:   false,
+		},
+		{
+			name: "payment mismatch within tolerance",
+			row: Row{
+				Payment:   decimal.NewFromFloat(1000.005),
+				Principal: decimal.NewFromFloat(800),
+				Interest:  decimal.NewFromFloat(200),
+			},
+			tolerance: decimal.NewFromFloat(0.01),
+			wantErr:   false,
+		},
+		{
+			name: "payment mismatch exceeds tolerance",
+			row: Row{
+				Payment:   decimal.NewFromFloat(1010),
+				Principal: decimal.NewFromFloat(800),
+				Interest:  decimal.NewFromFloat(200),
+			},
+			tolerance: decimal.NewFromFloat(0.01),
+			wantErr:   true,
+			errType:   ErrPayment,
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			err := sanityCheckUpdate(&tt.row, tt.tolerance)
+			if (err != nil) != tt.wantErr {
+				t.Errorf("sanityCheckUpdate() error = %v, wantErr %v", err, tt.wantErr)
+				return
+			}
+			if tt.wantErr && err != tt.errType {
+				t.Errorf("sanityCheckUpdate() error = %v, want %v", err, tt.errType)
+			}
+		})
+	}
+}
+
+// Test for NewAmortization error cases
+func TestNewAmortization_ErrorCases(t *testing.T) {
+	tests := []struct {
+		name    string
+		config  *Config
+		wantErr bool
+	}{
+		{
+			name: "invalid frequency",
+			config: &Config{
+				StartDate:      time.Date(2020, 1, 1, 0, 0, 0, 0, time.UTC),
+				EndDate:        time.Date(2020, 12, 31, 0, 0, 0, 0, time.UTC),
+				Frequency:      frequency.Type(99), // Invalid frequency
+				PaymentPeriod:  paymentperiod.ENDING,
+				InterestType:   interesttype.REDUCING,
+				AmountBorrowed: decimal.NewFromFloat(100000),
+				Interest:       decimal.NewFromFloat(10),
+			},
+			wantErr: true,
+		},
+		{
+			name: "uneven end date",
+			config: &Config{
+				StartDate:      time.Date(2020, 1, 1, 0, 0, 0, 0, time.UTC),
+				EndDate:        time.Date(2020, 1, 15, 0, 0, 0, 0, time.UTC), // 15 days, not monthly
+				Frequency:      frequency.MONTHLY,
+				PaymentPeriod:  paymentperiod.ENDING,
+				InterestType:   interesttype.REDUCING,
+				AmountBorrowed: decimal.NewFromFloat(100000),
+				Interest:       decimal.NewFromFloat(10),
+			},
+			wantErr: true,
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			_, err := NewAmortization(tt.config)
+			if (err != nil) != tt.wantErr {
+				t.Errorf("NewAmortization() error = %v, wantErr %v", err, tt.wantErr)
+			}
+		})
+	}
+}
+
+// Test for PlotRows error cases
+func TestPlotRows_ErrorCases(t *testing.T) {
+	rows := getRowsWithRounding(t)
+
+	t.Run("invalid file path", func(t *testing.T) {
+		// Try to create file in non-existent directory
+		err := PlotRows(rows, "/invalid/path/test")
+		if err == nil {
+			t.Error("PlotRows() expected error for invalid path, got nil")
+		}
+	})
+}
+
+// Test for IPmt edge cases
+func TestIPmt_EdgeCases(t *testing.T) {
+	tests := []struct {
+		name string
+		rate decimal.Decimal
+		per  int64
+		nper int64
+		pv   decimal.Decimal
+	}{
+		{
+			name: "valid case",
+			rate: decimal.NewFromFloat(0.1),
+			per:  1,
+			nper: 12,
+			pv:   decimal.NewFromFloat(1000),
+		},
+		{
+			name: "small rate",
+			rate: decimal.NewFromFloat(0.001),
+			per:  1,
+			nper: 12,
+			pv:   decimal.NewFromFloat(1000),
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			result := IPmt(tt.rate, tt.per, tt.nper, tt.pv, decimal.Zero, paymentperiod.ENDING)
+			// Just check that it doesn't panic and returns a decimal
+			if result.String() == "NaN" {
+				t.Errorf("IPmt() returned NaN")
+			}
+		})
+	}
+}
+
+// Test for PrintRows function
+func TestPrintRows(t *testing.T) {
+	rows := []Row{
+		{
+			Period:    1,
+			StartDate: time.Date(2020, 1, 1, 0, 0, 0, 0, time.UTC),
+			EndDate:   time.Date(2020, 2, 1, 0, 0, 0, 0, time.UTC),
+			Payment:   decimal.NewFromFloat(1000),
+			Interest:  decimal.NewFromFloat(200),
+			Principal: decimal.NewFromFloat(800),
+		},
+	}
+
+	// This function prints to stdout, so we just test it doesn't panic
+	t.Run("print rows without panic", func(t *testing.T) {
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("PrintRows() panicked: %v", r)
+			}
+		}()
+		PrintRows(rows)
+	})
+}
+
+// Test for PlotRows file creation error
+func TestPlotRows_FileError(t *testing.T) {
+	rows := getRowsWithRounding(t)
+
+	// Test with invalid characters in filename (Windows doesn't allow certain characters)
+	err := PlotRows(rows, "test<>file")
+	if err == nil {
+		t.Error("Expected error for invalid filename characters")
+	}
+}
+
+// Test for IPmt with different periods
+func TestIPmt_DifferentPeriods(t *testing.T) {
+	rate := decimal.NewFromFloat(0.1)
+	nper := int64(12)
+	pv := decimal.NewFromFloat(1000)
+
+	// Test different periods
+	for per := int64(1); per <= 3; per++ {
+		result := IPmt(rate, per, nper, pv, decimal.Zero, paymentperiod.ENDING)
+		if result.IsZero() {
+			t.Errorf("IPmt() for period %d returned zero", per)
+		}
+	}
+}
