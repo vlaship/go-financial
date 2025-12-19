@@ -15,5 +15,7 @@
  vendor/
 
  # goland configs
- .idea
+ .idea/
+ .vscode/
+ .kiro/
 loan-schedule.html
