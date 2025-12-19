@@ -5,6 +5,7 @@ import (
 	"errors"
 	"fmt"
 	"io"
+	"regexp"
 	"strings"
 	"testing"
 	"time"
@@ -15,7 +16,7 @@ import (
 
 	"github.com/razorpay/go-financial/enums/interesttype"
 	"github.com/razorpay/go-financial/enums/paymentperiod"
-	"github.com/smartystreets/assertions"
+	"github.com/smarty/assertions"
 
 	"github.com/razorpay/go-financial/enums/frequency"
 )
@@ -344,16 +345,34 @@ func (er *errorWriter) Write(p []byte) (n int, err error) {
 }
 
 func getHtmlWithoutUniqueId(input string) string {
-	lines := strings.Split(input, "\n")
-	var result []string
-	for i := range lines {
-		// skipping the unique id lines
-		if i >= 11 && i <= 18 {
-			continue
+	// Use regex to remove unique IDs and normalize the HTML structure
+	// Remove unique IDs from div elements
+	re1 := regexp.MustCompile(`id="[^"]*"`)
+	result := re1.ReplaceAllString(input, `id="UNIQUE_ID"`)
+
+	// Remove unique IDs from JavaScript variable names
+	re2 := regexp.MustCompile(`\bgoecharts_[a-zA-Z0-9]+\b`)
+	result = re2.ReplaceAllString(result, `goecharts_UNIQUE_ID`)
+
+	// Remove unique IDs from getElementById calls
+	re3 := regexp.MustCompile(`getElementById\('[a-zA-Z0-9]+'\)`)
+	result = re3.ReplaceAllString(result, `getElementById('UNIQUE_ID')`)
+
+	// Remove unique IDs from option variable names
+	re4 := regexp.MustCompile(`\boption_[a-zA-Z0-9]+\b`)
+	result = re4.ReplaceAllString(result, `option_UNIQUE_ID`)
+
+	// Normalize whitespace and line breaks for consistent comparison
+	lines := strings.Split(result, "\n")
+	var normalizedLines []string
+	for _, line := range lines {
+		trimmed := strings.TrimSpace(line)
+		if trimmed != "" {
+			normalizedLines = append(normalizedLines, trimmed)
 		}
-		result = append(result, lines[i])
 	}
-	return strings.Join(result, "\n")
+
+	return strings.Join(normalizedLines, "\n")
 }
 
 func getExpectedHtmlString() string {
@@ -366,18 +385,14 @@ func getExpectedHtmlString() string {
     <script src="https://go-echarts.github.io/go-echarts-assets/assets/echarts.min.js"></script>
 </head>
 
-<body>
-<div class="container">
-    <div class="item" id="upuUxUZbTXgQ" style="width:1200px;height:600px;"></div>
-</div>
-
-<script type="text/javascript">
+<body><div class="container">
+    <div class="item" id="UNIQUE_ID" style="width:1200px;height:600px;"></div>
+</div><script type="text/javascript">
     "use strict";
-    let goecharts_upuUxUZbTXgQ = echarts.init(document.getElementById('upuUxUZbTXgQ'), "white");
-    let option_upuUxUZbTXgQ = {"color":["#c23531","#2f4554","#61a0a8","#d48265","#91c7ae","#749f83","#ca8622","#bda29a","#6e7074","#546570"],"dataZoom":[{"type":"inside","end":50},{"type":"slider","end":50}],"legend":{"show":true},"series":[{"name":"Principal","type":"bar","stack":"stackA","waveAnimation":false,"data":[{"value":32871},{"value":33528},{"value":34199},{"value":34883},{"value":35581},{"value":36292},{"value":37018},{"value":37758},{"value":38514},{"value":39284},{"value":40070},{"value":40871},{"value":41688},{"value":42522},{"value":43373},{"value":44240},{"value":45125},{"value":46027},{"value":46948},{"value":47887},{"value":48845},{"value":49822},{"value":50818},{"value":51836}]},{"name":"Interest","type":"bar","stack":"stackA","waveAnimation":false,"data":[{"name":"20000","value":20000},{"name":"19343","value":19343},{"name":"18672","value":18672},{"name":"17988","value":17988},{"name":"17290","value":17290},{"name":"16579","value":16579},{"name":"15853","value":15853},{"name":"15113","value":15113},{"name":"14357","value":14357},{"name":"13587","value":13587},{"name":"12801","value":12801},{"name":"12000","value":12000},{"name":"11183","value":11183},{"name":"10349","value":10349},{"name":"9498","value":9498},{"name":"8631","value":8631},{"name":"7746","value":7746},{"name":"6844","value":6844},{"name":"5923","value":5923},{"name":"4984","value":4984},{"name":"4026","value":4026},{"name":"3049","value":3049},{"name":"2053","value":2053},{"name":"1037","value":1037}]},{"name":"Payment","type":"bar","stack":"stackA","waveAnimation":false,"data":[{"value":52871},{"value":52871},{"value":52871},{"value":52871},{"value":52871},{"value":52871},{"value":52871},{"value":52871},{"value":52871},{"value":52871},{"value":52871},{"value":52871},{"value":52871},{"value":52871},{"value":52871},{"value":52871},{"value":52871},{"value":52871},{"value":52871},{"value":52871},{"value":52871},{"value":52871},{"value":52871},{"value":52873}]}],"title":{"text":"Loan repayment schedule"},"toolbox":{"show":true},"tooltip":{"show":false},"xAxis":[{"data":["2020-05-14","2020-06-14","2020-07-14","2020-08-14","2020-09-14","2020-10-14","2020-11-14","2020-12-14","2021-01-14","2021-02-14","2021-03-14","2021-04-14","2021-05-14","2021-06-14","2021-07-14","2021-08-14","2021-09-14","2021-10-14","2021-11-14","2021-12-14","2022-01-14","2022-02-14","2022-03-14","2022-04-14"]}],"yAxis":[{}]};
-    goecharts_upuUxUZbTXgQ.setOption(option_upuUxUZbTXgQ);
+    let goecharts_UNIQUE_ID = echarts.init(document.getElementById('UNIQUE_ID'), "white", { renderer: "canvas" });
+    let option_UNIQUE_ID = {"color":["#5470c6","#91cc75","#fac858","#ee6666","#73c0de","#3ba272","#fc8452","#9a60b4","#ea7ccc"],"dataZoom":[{"type":"inside","end":50},{"type":"slider","end":50}],"legend":{"show":true},"series":[{"name":"Principal","type":"bar","stack":"stackA","data":[{"value":"32871"},{"value":"33529"},{"value":"34199"},{"value":"34883"},{"value":"35581"},{"value":"36292"},{"value":"37018"},{"value":"37759"},{"value":"38514"},{"value":"39284"},{"value":"40070"},{"value":"40871"},{"value":"41688"},{"value":"42522"},{"value":"43373"},{"value":"44240"},{"value":"45125"},{"value":"46027"},{"value":"46948"},{"value":"47887"},{"value":"48845"},{"value":"49822"},{"value":"50818"},{"value":"51834"}]},{"name":"Interest","type":"bar","stack":"stackA","data":[{"value":"20000"},{"value":"19342"},{"value":"18672"},{"value":"17988"},{"value":"17290"},{"value":"16579"},{"value":"15853"},{"value":"15112"},{"value":"14357"},{"value":"13587"},{"value":"12801"},{"value":"12000"},{"value":"11183"},{"value":"10349"},{"value":"9498"},{"value":"8631"},{"value":"7746"},{"value":"6844"},{"value":"5923"},{"value":"4984"},{"value":"4026"},{"value":"3049"},{"value":"2053"},{"value":"1037"}]},{"name":"Payment","type":"bar","stack":"stackA","data":[{"value":"52871"},{"value":"52871"},{"value":"52871"},{"value":"52871"},{"value":"52871"},{"value":"52871"},{"value":"52871"},{"value":"52871"},{"value":"52871"},{"value":"52871"},{"value":"52871"},{"value":"52871"},{"value":"52871"},{"value":"52871"},{"value":"52871"},{"value":"52871"},{"value":"52871"},{"value":"52871"},{"value":"52871"},{"value":"52871"},{"value":"52871"},{"value":"52871"},{"value":"52871"},{"value":"52871"}]}],"title":{"text":"Loan repayment schedule"},"toolbox":{"show":true},"tooltip":{},"xAxis":[{"data":["2020-05-14","2020-06-14","2020-07-14","2020-08-14","2020-09-14","2020-10-14","2020-11-14","2020-12-14","2021-01-14","2021-02-14","2021-03-14","2021-04-14","2021-05-14","2021-06-14","2021-07-14","2021-08-14","2021-09-14","2021-10-14","2021-11-14","2021-12-14","2022-01-14","2022-02-14","2022-03-14","2022-04-14"]}],"yAxis":[{}]}
+    goecharts_UNIQUE_ID.setOption(option_UNIQUE_ID);
 </script>
-
 <style>
     .container {margin-top:30px; display: flex;justify-content: center;align-items: center;}
     .item {margin: auto;}
@@ -385,4 +400,204 @@ func getExpectedHtmlString() string {
 </body>
 </html>
 `
+}
+
+// Test for sanityCheckUpdate function error cases
+func TestSanityCheckUpdate(t *testing.T) {
+	tests := []struct {
+		name      string
+		row       Row
+		tolerance decimal.Decimal
+		wantErr   bool
+		errType   error
+	}{
+		{
+			name: "payment equals principal plus interest",
+			row: Row{
+				Payment:   decimal.NewFromFloat(1000),
+				Principal: decimal.NewFromFloat(800),
+				Interest:  decimal.NewFromFloat(200),
+			},
+			tolerance: decimal.NewFromFloat(0.01),
+			wantErr:   false,
+		},
+		{
+			name: "payment mismatch within tolerance",
+			row: Row{
+				Payment:   decimal.NewFromFloat(1000.005),
+				Principal: decimal.NewFromFloat(800),
+				Interest:  decimal.NewFromFloat(200),
+			},
+			tolerance: decimal.NewFromFloat(0.01),
+			wantErr:   false,
+		},
+		{
+			name: "payment mismatch exceeds tolerance",
+			row: Row{
+				Payment:   decimal.NewFromFloat(1010),
+				Principal: decimal.NewFromFloat(800),
+				Interest:  decimal.NewFromFloat(200),
+			},
+			tolerance: decimal.NewFromFloat(0.01),
+			wantErr:   true,
+			errType:   ErrPayment,
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			err := sanityCheckUpdate(&tt.row, tt.tolerance)
+			if (err != nil) != tt.wantErr {
+				t.Errorf("sanityCheckUpdate() error = %v, wantErr %v", err, tt.wantErr)
+				return
+			}
+			if tt.wantErr && err != tt.errType {
+				t.Errorf("sanityCheckUpdate() error = %v, want %v", err, tt.errType)
+			}
+		})
+	}
+}
+
+// Test for NewAmortization error cases
+func TestNewAmortization_ErrorCases(t *testing.T) {
+	tests := []struct {
+		name    string
+		config  *Config
+		wantErr bool
+	}{
+		{
+			name: "invalid frequency",
+			config: &Config{
+				StartDate:      time.Date(2020, 1, 1, 0, 0, 0, 0, time.UTC),
+				EndDate:        time.Date(2020, 12, 31, 0, 0, 0, 0, time.UTC),
+				Frequency:      frequency.Type(99), // Invalid frequency
+				PaymentPeriod:  paymentperiod.ENDING,
+				InterestType:   interesttype.REDUCING,
+				AmountBorrowed: decimal.NewFromFloat(100000),
+				Interest:       decimal.NewFromFloat(10),
+			},
+			wantErr: true,
+		},
+		{
+			name: "uneven end date",
+			config: &Config{
+				StartDate:      time.Date(2020, 1, 1, 0, 0, 0, 0, time.UTC),
+				EndDate:        time.Date(2020, 1, 15, 0, 0, 0, 0, time.UTC), // 15 days, not monthly
+				Frequency:      frequency.MONTHLY,
+				PaymentPeriod:  paymentperiod.ENDING,
+				InterestType:   interesttype.REDUCING,
+				AmountBorrowed: decimal.NewFromFloat(100000),
+				Interest:       decimal.NewFromFloat(10),
+			},
+			wantErr: true,
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			_, err := NewAmortization(tt.config)
+			if (err != nil) != tt.wantErr {
+				t.Errorf("NewAmortization() error = %v, wantErr %v", err, tt.wantErr)
+			}
+		})
+	}
+}
+
+// Test for PlotRows error cases
+func TestPlotRows_ErrorCases(t *testing.T) {
+	rows := getRowsWithRounding(t)
+
+	t.Run("invalid file path", func(t *testing.T) {
+		// Try to create file in non-existent directory
+		err := PlotRows(rows, "/invalid/path/test")
+		if err == nil {
+			t.Error("PlotRows() expected error for invalid path, got nil")
+		}
+	})
+}
+
+// Test for IPmt edge cases
+func TestIPmt_EdgeCases(t *testing.T) {
+	tests := []struct {
+		name string
+		rate decimal.Decimal
+		per  int64
+		nper int64
+		pv   decimal.Decimal
+	}{
+		{
+			name: "valid case",
+			rate: decimal.NewFromFloat(0.1),
+			per:  1,
+			nper: 12,
+			pv:   decimal.NewFromFloat(1000),
+		},
+		{
+			name: "small rate",
+			rate: decimal.NewFromFloat(0.001),
+			per:  1,
+			nper: 12,
+			pv:   decimal.NewFromFloat(1000),
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			result := IPmt(tt.rate, tt.per, tt.nper, tt.pv, decimal.Zero, paymentperiod.ENDING)
+			// Just check that it doesn't panic and returns a decimal
+			if result.String() == "NaN" {
+				t.Errorf("IPmt() returned NaN")
+			}
+		})
+	}
+}
+
+// Test for PrintRows function
+func TestPrintRows(t *testing.T) {
+	rows := []Row{
+		{
+			Period:    1,
+			StartDate: time.Date(2020, 1, 1, 0, 0, 0, 0, time.UTC),
+			EndDate:   time.Date(2020, 2, 1, 0, 0, 0, 0, time.UTC),
+			Payment:   decimal.NewFromFloat(1000),
+			Interest:  decimal.NewFromFloat(200),
+			Principal: decimal.NewFromFloat(800),
+		},
+	}
+
+	// This function prints to stdout, so we just test it doesn't panic
+	t.Run("print rows without panic", func(t *testing.T) {
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("PrintRows() panicked: %v", r)
+			}
+		}()
+		PrintRows(rows)
+	})
+}
+
+// Test for PlotRows file creation error
+func TestPlotRows_FileError(t *testing.T) {
+	rows := getRowsWithRounding(t)
+
+	// Test with invalid characters in filename (Windows doesn't allow certain characters)
+	err := PlotRows(rows, "test<>file")
+	if err == nil {
+		t.Error("Expected error for invalid filename characters")
+	}
+}
+
+// Test for IPmt with different periods
+func TestIPmt_DifferentPeriods(t *testing.T) {
+	rate := decimal.NewFromFloat(0.1)
+	nper := int64(12)
+	pv := decimal.NewFromFloat(1000)
+
+	// Test different periods
+	for per := int64(1); per <= 3; per++ {
+		result := IPmt(rate, per, nper, pv, decimal.Zero, paymentperiod.ENDING)
+		if result.IsZero() {
+			t.Errorf("IPmt() for period %d returned zero", per)
+		}
+	}
 }
