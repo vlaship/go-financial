@@ -12,7 +12,7 @@ import (
 
 	"github.com/go-echarts/go-echarts/v2/charts"
 	"github.com/go-echarts/go-echarts/v2/opts"
-	"github.com/razorpay/go-financial/enums/interesttype"
+	"github.com/vlaship/go-financial/enums/interesttype"
 )
 
 // Amortization struct holds the configuration and financial details.

@@ -1,4 +1,4 @@
-module github.com/razorpay/go-financial
+module github.com/vlaship/go-financial
 
 go 1.25
 

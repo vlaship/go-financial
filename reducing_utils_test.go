@@ -6,7 +6,7 @@ import (
 
 	"github.com/shopspring/decimal"
 
-	"github.com/razorpay/go-financial/enums/paymentperiod"
+	"github.com/vlaship/go-financial/enums/paymentperiod"
 )
 
 func Test_Pmt(t *testing.T) {
@@ -143,7 +143,6 @@ func Test_IPmt(t *testing.T) {
 	}
 }
 
-//
 func Test_PPmt(t *testing.T) {
 	type args struct {
 		rate decimal.Decimal

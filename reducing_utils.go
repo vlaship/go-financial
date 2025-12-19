@@ -13,8 +13,8 @@ import (
 	"fmt"
 	"math"
 
-	"github.com/razorpay/go-financial/enums/paymentperiod"
 	"github.com/shopspring/decimal"
+	"github.com/vlaship/go-financial/enums/paymentperiod"
 )
 
 /*
@@ -28,15 +28,17 @@ It is obtained by solving the following equation:
 	fv + pv*(1 + rate)**nper + pmt*(1 + rate*when)/rate*((1 + rate)**nper - 1) == 0
 
 Params:
- rate	: rate of interest compounded once per period
- nper	: total number of periods to be compounded for
- pv	: present value (e.g., an amount borrowed)
- fv	: future value (e.g., 0)
- when	: specification of whether payment is made
-	  at the beginning (when = 1) or the end
-	  (when = 0) of each period
+
+	 rate	: rate of interest compounded once per period
+	 nper	: total number of periods to be compounded for
+	 pv	: present value (e.g., an amount borrowed)
+	 fv	: future value (e.g., 0)
+	 when	: specification of whether payment is made
+		  at the beginning (when = 1) or the end
+		  (when = 0) of each period
 
 References:
+
 	[WRW] Wheeler, D. A., E. Rathke, and R. Weir (Eds.) (2009, May).
 	Open Document Format for Office Applications (OpenDocument)v1.2,
 	Part 2: Recalculated Formula (OpenFormula) Format - Annotated Version,
@@ -68,16 +70,17 @@ IPmt computes interest payment for a loan under a given period.
 
 Params:
 
- rate	: rate of interest compounded once per period
- per	: period under consideration
- nper	: total number of periods to be compounded for
- pv	: present value (e.g., an amount borrowed)
- fv	: future value (e.g., 0)
- when	: specification of whether payment is made
-	  at the beginning (when = 1) or the end
-	  (when = 0) of each period
+	 rate	: rate of interest compounded once per period
+	 per	: period under consideration
+	 nper	: total number of periods to be compounded for
+	 pv	: present value (e.g., an amount borrowed)
+	 fv	: future value (e.g., 0)
+	 when	: specification of whether payment is made
+		  at the beginning (when = 1) or the end
+		  (when = 0) of each period
 
 References:
+
 	[WRW] Wheeler, D. A., E. Rathke, and R. Weir (Eds.) (2009, May).
 	Open Document Format for Office Applications (OpenDocument)v1.2,
 	Part 2: Recalculated Formula (OpenFormula) Format - Annotated Version,
@@ -108,16 +111,17 @@ PPmt computes principal payment for a loan under a given period.
 
 Params:
 
- rate	: rate of interest compounded once per period
- per	: period under consideration
- nper	: total number of periods to be compounded for
- pv	: present value (e.g., an amount borrowed)
- fv	: future value (e.g., 0)
- when	: specification of whether payment is made
-	  at the beginning (when = 1) or the end
-	  (when = 0) of each period
+	 rate	: rate of interest compounded once per period
+	 per	: period under consideration
+	 nper	: total number of periods to be compounded for
+	 pv	: present value (e.g., an amount borrowed)
+	 fv	: future value (e.g., 0)
+	 when	: specification of whether payment is made
+		  at the beginning (when = 1) or the end
+		  (when = 0) of each period
 
 References:
+
 	[WRW] Wheeler, D. A., E. Rathke, and R. Weir (Eds.) (2009, May).
 	Open Document Format for Office Applications (OpenDocument)v1.2,
 	Part 2: Recalculated Formula (OpenFormula) Format - Annotated Version,
@@ -141,25 +145,23 @@ func rbl(rate decimal.Decimal, per int64, pmt decimal.Decimal, pv decimal.Decima
 /*
 Nper computes the number of periodic payments by solving the equation:
 
- fv +
- pv*(1 + rate)**nper +
- pmt*(1 + rate*when)/rate*((1 + rate)**nper - 1) = 0
-
+	fv +
+	pv*(1 + rate)**nper +
+	pmt*(1 + rate*when)/rate*((1 + rate)**nper - 1) = 0
 
 Params:
 
- rate	: an interest rate compounded once per period
- pmt	: a (fixed) payment, paid either
-	  at the beginning (when =  1) or the end (when = 0) of each period
- pv	: a present value
- when	: specification of whether payment is made
-	  at the beginning (when = 1) or the end
-	  (when = 0) of each period
- fv: a future value
- when	: specification of whether payment is made
-	  at the beginning (when = 1) or the end
-	  (when = 0) of each period
-
+	 rate	: an interest rate compounded once per period
+	 pmt	: a (fixed) payment, paid either
+		  at the beginning (when =  1) or the end (when = 0) of each period
+	 pv	: a present value
+	 when	: specification of whether payment is made
+		  at the beginning (when = 1) or the end
+		  (when = 0) of each period
+	 fv: a future value
+	 when	: specification of whether payment is made
+		  at the beginning (when = 1) or the end
+		  (when = 0) of each period
 */
 func Nper(rate decimal.Decimal, pmt decimal.Decimal, pv decimal.Decimal, fv decimal.Decimal, when paymentperiod.Type) (result decimal.Decimal, err error) {
 	defer func() {
@@ -187,23 +189,23 @@ func Nper(rate decimal.Decimal, pmt decimal.Decimal, pv decimal.Decimal, fv deci
 /*
 Fv computes future value at the end of some periods(nper) by solving the following equation:
 
- fv +
- pv*(1+rate)**nper +
- pmt*(1 + rate*when)/rate*((1 + rate)**nper - 1) == 0
-
+	fv +
+	pv*(1+rate)**nper +
+	pmt*(1 + rate*when)/rate*((1 + rate)**nper - 1) == 0
 
 Params:
 
- pv	: a present value
- rate	: an interest rate compounded once per period
- nper	: total number of periods
- pmt	: a (fixed) payment, paid either
-	  at the beginning (when =  1) or the end (when = 0) of each period
- when	: specification of whether payment is made
-	  at the beginning (when = 1) or the end
-	  (when = 0) of each period
+	 pv	: a present value
+	 rate	: an interest rate compounded once per period
+	 nper	: total number of periods
+	 pmt	: a (fixed) payment, paid either
+		  at the beginning (when =  1) or the end (when = 0) of each period
+	 when	: specification of whether payment is made
+		  at the beginning (when = 1) or the end
+		  (when = 0) of each period
 
 References:
+
 	[WRW] Wheeler, D. A., E. Rathke, and R. Weir (Eds.) (2009, May).
 	Open Document Format for Office Applications (OpenDocument)v1.2,
 	Part 2: Recalculated Formula (OpenFormula) Format - Annotated Version,
@@ -229,23 +231,23 @@ func Fv(rate decimal.Decimal, nper int64, pmt decimal.Decimal, pv decimal.Decima
 /*
 Pv computes present value by solving the following equation:
 
- fv +
- pv*(1+rate)**nper +
- pmt*(1 + rate*when)/rate*((1 + rate)**nper - 1) == 0
-
+	fv +
+	pv*(1+rate)**nper +
+	pmt*(1 + rate*when)/rate*((1 + rate)**nper - 1) == 0
 
 Params:
 
- fv	: a future value
- rate	: an interest rate compounded once per period
- nper	: total number of periods
- pmt	: a (fixed) payment, paid either
-	  at the beginning (when =  1) or the end (when = 0) of each period
- when	: specification of whether payment is made
-	  at the beginning (when = 1) or the end
-	  (when = 0) of each period
+	 fv	: a future value
+	 rate	: an interest rate compounded once per period
+	 nper	: total number of periods
+	 pmt	: a (fixed) payment, paid either
+		  at the beginning (when =  1) or the end (when = 0) of each period
+	 when	: specification of whether payment is made
+		  at the beginning (when = 1) or the end
+		  (when = 0) of each period
 
 References:
+
 	[WRW] Wheeler, D. A., E. Rathke, and R. Weir (Eds.) (2009, May).
 	Open Document Format for Office Applications (OpenDocument)v1.2,
 	Part 2: Recalculated Formula (OpenFormula) Format - Annotated Version,
@@ -273,12 +275,12 @@ Npv computes the Net Present Value of a cash flow series
 
 Params:
 
- rate	: a discount rate applied once per period
- values	: the value of the cash flow for that time period. Values provided here must be an array of float64
+	rate	: a discount rate applied once per period
+	values	: the value of the cash flow for that time period. Values provided here must be an array of float64
 
 References:
-	L. J. Gitman, “Principles of Managerial Finance, Brief,” 3rd ed., Addison-Wesley, 2003, pg. 346.
 
+	L. J. Gitman, “Principles of Managerial Finance, Brief,” 3rd ed., Addison-Wesley, 2003, pg. 346.
 */
 func Npv(rate decimal.Decimal, values []decimal.Decimal) decimal.Decimal {
 	internalNpv := decimal.NewFromFloat(0.0)
@@ -296,14 +298,14 @@ This function computes the ratio that is used to find a single value that sets t
 
 Params:
 
- nper 	: number of compounding periods
- pmt	: a (fixed) payment, paid either
-	  	  at the beginning (when = 1) or the end (when = 0) of each period
- pv		: a present value
- fv		: a future value
- when 	: specification of whether payment is made
-		  at the beginning (when = 1) or the end (when = 0) of each period
- curRate: the rate compounded once per period rate
+	 nper 	: number of compounding periods
+	 pmt	: a (fixed) payment, paid either
+		  	  at the beginning (when = 1) or the end (when = 0) of each period
+	 pv		: a present value
+	 fv		: a future value
+	 when 	: specification of whether payment is made
+			  at the beginning (when = 1) or the end (when = 0) of each period
+	 curRate: the rate compounded once per period rate
 */
 func getRateRatio(pv, fv, pmt, curRate decimal.Decimal, nper int64, when paymentperiod.Type) decimal.Decimal {
 	oneInDecimal := decimal.NewFromInt(1)
@@ -330,21 +332,24 @@ func getRateRatio(pv, fv, pmt, curRate decimal.Decimal, nper int64, when payment
 
 /*
 Rate computes the Interest rate per period by running Newton Rapson to find an approximate value for:
- y = fv + pv*(1+rate)**nper + pmt*(1+rate*when)/rate*((1+rate)**nper-1)*(0 - y_previous) /(rate - rate_previous) = dy/drate {derivative of y w.r.t. rate}
+
+	y = fv + pv*(1+rate)**nper + pmt*(1+rate*when)/rate*((1+rate)**nper-1)*(0 - y_previous) /(rate - rate_previous) = dy/drate {derivative of y w.r.t. rate}
 
 Params:
- nper	: number of compounding periods
- pmt	: a (fixed) payment, paid either
-	  at the beginning (when = 1) or the end (when = 0) of each period
- pv	: a present value
- fv	: a future value
- when 	: specification of whether payment is made
-	  at the beginning (when = 1) or the end (when = 0) of each period
- maxIter 	: total number of iterations to perform calculation
- tolerance 	: accept result only if the difference in iteration values is less than the tolerance provided
- initialGuess 	: an initial point to start approximating from
+
+	 nper	: number of compounding periods
+	 pmt	: a (fixed) payment, paid either
+		  at the beginning (when = 1) or the end (when = 0) of each period
+	 pv	: a present value
+	 fv	: a future value
+	 when 	: specification of whether payment is made
+		  at the beginning (when = 1) or the end (when = 0) of each period
+	 maxIter 	: total number of iterations to perform calculation
+	 tolerance 	: accept result only if the difference in iteration values is less than the tolerance provided
+	 initialGuess 	: an initial point to start approximating from
 
 References:
+
 	[WRW] Wheeler, D. A., E. Rathke, and R. Weir (Eds.) (2009, May).
 	Open Document Format for Office Applications (OpenDocument)v1.2,
 	Part 2: Recalculated Formula (OpenFormula) Format - Annotated Version,
