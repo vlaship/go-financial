@@ -152,8 +152,8 @@ func getStackedBarPlot(rows []Row) *charts.Bar {
 			Width:  "1200px",
 			Height: "600px",
 		}),
-		charts.WithToolboxOpts(opts.Toolbox{Show: true}),
-		charts.WithLegendOpts(opts.Legend{Show: true}),
+		charts.WithToolboxOpts(opts.Toolbox{Show: opts.Bool(true)}),
+		charts.WithLegendOpts(opts.Legend{Show: opts.Bool(true)}),
 		charts.WithDataZoomOpts(opts.DataZoom{
 			Type:  "inside",
 			Start: 0,

@@ -15,7 +15,7 @@ import (
 
 	"github.com/razorpay/go-financial/enums/interesttype"
 	"github.com/razorpay/go-financial/enums/paymentperiod"
-	"github.com/smartystreets/assertions"
+	"github.com/smarty/assertions"
 
 	"github.com/razorpay/go-financial/enums/frequency"
 )
